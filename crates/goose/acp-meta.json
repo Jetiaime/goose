@@ -176,6 +176,11 @@
       "responseType": "DefaultsReadResponse_unstable"
     },
     {
+      "method": "_goose/unstable/defaults/clear",
+      "requestType": "DefaultsClearRequest_unstable",
+      "responseType": "DefaultsReadResponse_unstable"
+    },
+    {
       "method": "_goose/unstable/onboarding/import/scan",
       "requestType": "OnboardingImportScanRequest_unstable",
       "responseType": "OnboardingImportScanResponse_unstable"

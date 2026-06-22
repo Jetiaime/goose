@@ -14,8 +14,8 @@ import ModelsBottomBar from './settings/models/bottom_bar/ModelsBottomBar';
 import { BottomMenuExtensionSelection } from './bottom_menu/BottomMenuExtensionSelection';
 import { cn } from '../utils';
 import { AlertType, useAlerts } from './alerts';
-import { useConfig } from './ConfigContext';
 import { useModelAndProvider } from './ModelAndProviderContext';
+import { acpListProviderDetails } from '../acp/providers';
 import { USE_ACP_CHAT } from '../acpChatFeatureFlag';
 import { useAudioRecorder } from '../hooks/useAudioRecorder';
 import { toastError } from '../toasts';
@@ -271,7 +271,6 @@ export default function ChatInput({
     null
   ) as React.RefObject<HTMLDivElement>;
   const intl = useIntl();
-  const { getProviders } = useConfig();
   const {
     getCurrentModelAndProvider,
     currentModel: configModel,
@@ -588,7 +587,7 @@ export default function ChatInput({
       }
 
       // Priority 3: Fall back to provider metadata known_models (may be outdated)
-      const providers = await getProviders(true);
+      const providers = await acpListProviderDetails();
       const currentProvider = providers.find((p) => p.name === provider);
       if (currentProvider?.metadata?.known_models) {
         const modelConfig = currentProvider.metadata.known_models.find((m) => m.name === model);

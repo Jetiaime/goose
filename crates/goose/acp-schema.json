@@ -2455,6 +2455,12 @@
       "x-side": "agent",
       "x-method": "_goose/unstable/defaults/save"
     },
+    "DefaultsClearRequest_unstable": {
+      "type": "object",
+      "description": "Clear Goose default provider and model configuration.",
+      "x-side": "agent",
+      "x-method": "_goose/unstable/defaults/clear"
+    },
     "OnboardingImportScanRequest_unstable": {
       "type": "object",
       "properties": {
@@ -4855,6 +4861,15 @@
                   ],
                   "description": "Params for _goose/unstable/defaults/save",
                   "title": "DefaultsSaveRequest_unstable"
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "#/$defs/DefaultsClearRequest_unstable"
+                    }
+                  ],
+                  "description": "Params for _goose/unstable/defaults/clear",
+                  "title": "DefaultsClearRequest_unstable"
                 },
                 {
                   "allOf": [

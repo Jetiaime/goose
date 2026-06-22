@@ -1,12 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { KeyRound, Loader2, LogIn, RefreshCw, Trash2 } from 'lucide-react';
 import { toast } from 'react-toastify';
-import {
-  configureProviderOauth,
-  deleteProviderSecret,
-  listProviderSecrets,
-  ProviderSecret,
-} from '../../../api';
+import { deleteProviderSecret, listProviderSecrets, ProviderSecret } from '../../../api';
+import { acpAuthenticateProvider } from '../../../acp/providers';
 import { errorMessage } from '../../../utils/conversionUtils';
 import { useModelAndProvider } from '../../ModelAndProviderContext';
 import { Button } from '../../ui/button';
@@ -181,10 +177,7 @@ export default function AuthSettingsSection() {
 
     setConfiguringId(secret.id);
     try {
-      await configureProviderOauth({
-        path: { name: secret.configure_provider },
-        throwOnError: true,
-      });
+      await acpAuthenticateProvider(secret.configure_provider);
       toast.success(intl.formatMessage(i18n.signedIn));
       await loadSecrets();
     } catch (error) {

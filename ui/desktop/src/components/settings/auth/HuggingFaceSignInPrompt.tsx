@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Loader2, LogIn } from 'lucide-react';
 import { toast } from 'react-toastify';
-import { configureProviderOauth, listProviderSecrets } from '../../../api';
+import { listProviderSecrets } from '../../../api';
+import { acpAuthenticateProvider } from '../../../acp/providers';
 import { errorMessage } from '../../../utils/conversionUtils';
 import { defineMessages, useIntl } from '../../../i18n';
 import { Button } from '../../ui/button';
@@ -70,10 +71,7 @@ export default function HuggingFaceSignInPrompt({
   const signIn = async () => {
     setSigningIn(true);
     try {
-      await configureProviderOauth({
-        path: { name: HUGGINGFACE_PROVIDER },
-        throwOnError: true,
-      });
+      await acpAuthenticateProvider(HUGGINGFACE_PROVIDER);
       toast.success(intl.formatMessage(i18n.signedIn));
       setLoggedIn(true);
       onSignedIn?.();

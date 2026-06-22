@@ -296,6 +296,14 @@ impl GooseAcpAgent {
         self.on_defaults_save(req).await
     }
 
+    #[custom_method(DefaultsClearRequest)]
+    async fn dispatch_defaults_clear(
+        &self,
+        req: DefaultsClearRequest,
+    ) -> Result<DefaultsReadResponse, agent_client_protocol::Error> {
+        self.on_defaults_clear(req).await
+    }
+
     #[custom_method(OnboardingImportScanRequest)]
     async fn dispatch_onboarding_import_scan(
         &self,

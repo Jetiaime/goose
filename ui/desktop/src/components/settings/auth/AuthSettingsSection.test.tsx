@@ -2,12 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, type RenderOptions } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import AuthSettingsSection from './AuthSettingsSection';
-import {
-  configureProviderOauth,
-  deleteProviderSecret,
-  listProviderSecrets,
-  ProviderSecret,
-} from '../../../api';
+import { deleteProviderSecret, listProviderSecrets, ProviderSecret } from '../../../api';
+import { acpAuthenticateProvider } from '../../../acp/providers';
 import { IntlTestWrapper } from '../../../i18n/test-utils';
 import { toast } from 'react-toastify';
 
@@ -15,11 +11,14 @@ vi.mock('../../../api', async () => {
   const actual = await vi.importActual<typeof import('../../../api')>('../../../api');
   return {
     ...actual,
-    configureProviderOauth: vi.fn(),
     listProviderSecrets: vi.fn(),
     deleteProviderSecret: vi.fn(),
   };
 });
+
+vi.mock('../../../acp/providers', () => ({
+  acpAuthenticateProvider: vi.fn(),
+}));
 
 vi.mock('../../ModelAndProviderContext', () => ({
   useModelAndProvider: () => ({
@@ -36,7 +35,7 @@ vi.mock('react-toastify', () => ({
 
 const mockedListProviderSecrets = vi.mocked(listProviderSecrets);
 const mockedDeleteProviderSecret = vi.mocked(deleteProviderSecret);
-const mockedConfigureProviderOauth = vi.mocked(configureProviderOauth);
+const mockedAcpAuthenticateProvider = vi.mocked(acpAuthenticateProvider);
 const mockedToast = vi.mocked(toast);
 
 const renderWithIntl = (ui: React.ReactElement, options?: RenderOptions) =>
@@ -68,7 +67,7 @@ describe('AuthSettingsSection', () => {
     vi.clearAllMocks();
     mockedListProviderSecrets.mockResolvedValue(apiResult({ secrets: [] }));
     mockedDeleteProviderSecret.mockResolvedValue(apiResult('ok'));
-    mockedConfigureProviderOauth.mockResolvedValue(apiResult('ok'));
+    mockedAcpAuthenticateProvider.mockResolvedValue(undefined);
   });
 
   it('renders an empty state when no credentials are stored', async () => {
@@ -182,10 +181,7 @@ describe('AuthSettingsSection', () => {
     await user.click(screen.getByRole('button', { name: 'Sign in' }));
 
     await waitFor(() => {
-      expect(mockedConfigureProviderOauth).toHaveBeenCalledWith({
-        path: { name: 'huggingface' },
-        throwOnError: true,
-      });
+      expect(mockedAcpAuthenticateProvider).toHaveBeenCalledWith('huggingface');
     });
     await waitFor(() => {
       expect(mockedToast.success).toHaveBeenCalledWith('Credential configured');

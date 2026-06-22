@@ -24,6 +24,7 @@ import type {
   CustomProviderUpdateResponse_unstable,
   DecodeRecipeRequest_unstable,
   DecodeRecipeResponse_unstable,
+  DefaultsClearRequest_unstable,
   DefaultsReadRequest_unstable,
   DefaultsReadResponse_unstable,
   DefaultsSaveRequest_unstable,
@@ -536,6 +537,18 @@ export class GooseExtClient {
   ): Promise<DefaultsReadResponse_unstable> {
     const raw = await this.conn.extMethod(
       "_goose/unstable/defaults/save",
+      params,
+    );
+    return zDefaultsReadResponse_unstable.parse(
+      raw,
+    ) as DefaultsReadResponse_unstable;
+  }
+
+  async defaultsClear_unstable(
+    params: DefaultsClearRequest_unstable,
+  ): Promise<DefaultsReadResponse_unstable> {
+    const raw = await this.conn.extMethod(
+      "_goose/unstable/defaults/clear",
       params,
     );
     return zDefaultsReadResponse_unstable.parse(

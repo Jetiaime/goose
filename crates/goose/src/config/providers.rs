@@ -144,6 +144,21 @@ pub fn set_active_provider(config: &Config, name: &str, model: &str) -> Result<(
     set_provider_entry(config, name, &entry)
 }
 
+/// Clear the active provider and model selection.
+///
+/// Removes the `active_provider` key along with the legacy flat
+/// `GOOSE_PROVIDER` / `GOOSE_MODEL` keys, leaving per-provider entries (and
+/// their stored credentials) intact.
+pub fn clear_active_provider(config: &Config) -> Result<(), ConfigError> {
+    for key in [ACTIVE_PROVIDER_KEY, "GOOSE_PROVIDER", "GOOSE_MODEL"] {
+        match config.delete(key) {
+            Ok(()) | Err(ConfigError::NotFound(_)) => {}
+            Err(e) => return Err(e),
+        }
+    }
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -189,6 +204,39 @@ mod tests {
         assert!(entry.enabled);
         assert!(entry.configured);
         assert_eq!(entry.model, "current");
+    }
+
+    #[test]
+    fn test_clear_active_provider_preserves_provider_entries() {
+        let config = new_test_config();
+        set_active_provider(&config, "openai", "gpt-4o").unwrap();
+
+        clear_active_provider(&config).unwrap();
+
+        assert!(get_active_provider(&config).is_none());
+        let entry = get_provider_entry(&config, "openai").unwrap();
+        assert_eq!(entry.model, "gpt-4o");
+        assert!(entry.configured);
+    }
+
+    #[test]
+    fn test_clear_active_provider_removes_legacy_keys() {
+        let config = new_test_config();
+        config.set_param("GOOSE_PROVIDER", "anthropic").unwrap();
+        config.set_param("GOOSE_MODEL", "claude").unwrap();
+
+        clear_active_provider(&config).unwrap();
+
+        assert!(get_active_provider(&config).is_none());
+        assert!(get_active_model(&config).is_none());
+    }
+
+    #[test]
+    fn test_clear_active_provider_is_idempotent() {
+        let config = new_test_config();
+        clear_active_provider(&config).unwrap();
+        clear_active_provider(&config).unwrap();
+        assert!(get_active_provider(&config).is_none());
     }
 
     #[test]

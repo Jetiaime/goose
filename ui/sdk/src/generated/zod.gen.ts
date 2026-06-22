@@ -1043,6 +1043,11 @@ export const zDefaultsSaveRequest_unstable = z.object({
 });
 
 /**
+ * Clear Goose default provider and model configuration.
+ */
+export const zDefaultsClearRequest_unstable = z.record(z.unknown());
+
+/**
  * Sources that onboarding knows how to discover and import.
  */
 export const zOnboardingImportSourceKind = z.enum(['goose_config', 'claude_desktop']);
@@ -1948,6 +1953,7 @@ export const zExtRequest = z.object({
             zPreferencesRemoveRequest_unstable,
             zDefaultsReadRequest_unstable,
             zDefaultsSaveRequest_unstable,
+            zDefaultsClearRequest_unstable,
             zOnboardingImportScanRequest_unstable,
             zOnboardingImportApplyRequest_unstable,
             zExportSessionRequest_unstable,
